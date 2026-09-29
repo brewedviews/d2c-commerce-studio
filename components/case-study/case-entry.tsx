@@ -38,7 +38,7 @@ export function CaseEntry({ study, index }: { study: CaseStudy; index: number })
               {String(index).padStart(2, "0")} — {study.category}
             </p>
             <h3 id={titleId} className="mt-4 font-display text-d2">
-              <Link href={href} className="transition-colors duration-500 hover:text-paper/70">
+              <Link href={href} data-track="click_case_study" data-track-location={`home_${study.slug}_title`} className="transition-colors duration-500 hover:text-paper/70">
                 {study.title}
               </Link>
             </h3>
@@ -71,7 +71,7 @@ export function CaseEntry({ study, index }: { study: CaseStudy; index: number })
             <p className="mt-5 text-lead text-paper/90">{study.outcome}</p>
             <p className="label mt-6 text-stone-soft">{study.stack.join(" · ")}</p>
             <div className="mt-10 flex flex-col items-start gap-5 md:mt-auto md:pt-10">
-              <ButtonLink href={href} variant="solid-light">
+              <ButtonLink href={href} variant="solid-light" track="click_case_study" trackLocation={`home_${study.slug}`}>
                 Read the case study
               </ButtonLink>
               {study.url && (
@@ -79,6 +79,8 @@ export function CaseEntry({ study, index }: { study: CaseStudy; index: number })
                   href={study.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  data-track="click_visit_site"
+                  data-track-location={`home_${study.slug}`}
                   className="link-underline inline-flex items-center gap-2 text-paper/80 hover:text-paper"
                 >
                   Visit {study.urlLabel} <span aria-hidden="true">↗</span>

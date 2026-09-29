@@ -3,7 +3,10 @@
  * (usually through a `data-track` attribute) and never talk to a vendor SDK.
  */
 export const ANALYTICS_EVENTS = [
+  "view_work",
   "view_case_study",
+  "click_case_study",
+  "click_visit_site",
   "view_pricing",
   "start_project",
   "submit_contact_form",
