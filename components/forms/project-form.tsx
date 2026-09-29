@@ -40,7 +40,7 @@ export function ProjectForm({ fallbackContact }: { fallbackContact?: { label: st
     return (
       <div ref={statusRef} tabIndex={-1} role="status" className="rounded-sm bg-ink p-8 text-paper outline-none md:p-12">
         <p className="label text-accent-ink/70">Enquiry received</p>
-        <p className="mt-6 font-display text-d3">Thank you — we’ll be in touch shortly.</p>
+        <p className="mt-6 font-display text-d3">Thanks — your project enquiry is in. We’ll get back to you shortly.</p>
         <p className="mt-6 max-w-md text-paper/75">
           We’ll review your brief and reply to schedule a short discovery call. You’ll receive a fixed quote after that
           conversation.
@@ -155,6 +155,8 @@ export function ProjectForm({ fallbackContact }: { fallbackContact?: { label: st
         </Field>
         <Field id="category" label="Business category" error={errors?.category}>
           <Select
+            // React doesn't re-apply a changed defaultValue to <select> after a form reset; remount instead.
+            key={`category-${v("category") ?? ""}`}
             id="category"
             name="category"
             required
@@ -195,7 +197,7 @@ export function ProjectForm({ fallbackContact }: { fallbackContact?: { label: st
 
       <div className="grid gap-x-8 gap-y-9 sm:grid-cols-2">
         <Field id="launchDate" label="Desired launch" optional>
-          <Select id="launchDate" name="launchDate" defaultValue={v("launchDate") ?? ""}>
+          <Select key={`launch-${v("launchDate") ?? ""}`} id="launchDate" name="launchDate" defaultValue={v("launchDate") ?? ""}>
             <option value="">Select…</option>
             {LAUNCH_WINDOWS.map((w) => (
               <option key={w} value={w}>

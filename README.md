@@ -37,14 +37,18 @@ All variables are documented in [`.env.example`](.env.example). None are secret 
 | `NEXT_PUBLIC_CONTACT_EMAIL` | build | Shows email links. Optional. |
 | `NEXT_PUBLIC_WHATSAPP_NUMBER` | build | Shows WhatsApp links (international format). Optional. |
 | `NEXT_PUBLIC_INSTAGRAM_URL` | build | Footer link. Optional. |
-| `LEAD_WEBHOOK_URL` | server | Enquiries are POSTed here as JSON. |
-| `RESEND_API_KEY`, `LEAD_NOTIFY_EMAIL`, `LEAD_FROM_EMAIL` | server | Enquiries are emailed via Resend. |
+| `RESEND_API_KEY` | server | Resend API key. Enquiries are emailed via Resend (primary channel). |
+| `LEAD_NOTIFY_EMAIL` | server | Recipient inbox(es), comma-separated. |
+| `LEAD_FROM_EMAIL` | server | Sender on a Resend-verified domain, e.g. `Brewed Views <enquiries@yourdomain.com>`. |
+| `LEAD_WEBHOOK_URL` | server | Optional: enquiries are also POSTed here as JSON. |
 | `NEXT_PUBLIC_GA4_ID` | build | Loads GA4 when set. |
 | `NEXT_PUBLIC_META_PIXEL_ID` | build | Loads Meta Pixel when set. |
 
 `NEXT_PUBLIC_*` values are inlined at **build time** — set them in Railway before deploying and redeploy after changing them.
 
-**Enquiry form:** configure at least one of the webhook or Resend channels. If neither is set, the form tells the visitor online enquiries aren't connected and points to email/WhatsApp if those are configured. It never shows a fake success.
+**Enquiry form:** `Visitor → form → server action → Resend → LEAD_NOTIFY_EMAIL`. The email is sent from `LEAD_FROM_EMAIL` with the visitor's address as **Reply-To**, so replying goes straight to the prospect. It has a readable plain-text body and a simple HTML version (`lib/leads/email.ts`). Keys and recipients stay server-side. The form shows success only when a configured channel accepted the enquiry. If nothing is configured, or delivery fails, the visitor sees an honest error and keeps everything they typed. Spam protection is a honeypot field plus server-side validation.
+
+To go live with Resend: verify your sending domain in Resend, then set `RESEND_API_KEY`, `LEAD_NOTIFY_EMAIL` and `LEAD_FROM_EMAIL` in Railway. Without a verified domain, Resend's test sender `onboarding@resend.dev` can only deliver to the inbox that owns the Resend account.
 
 ## Deployment (Railway)
 
@@ -111,7 +115,13 @@ Components never call vendor SDKs. They declare intent:
 
 ### Content and case studies
 
-Edit files in `content/` to change copy. To add a case study, append to `content/case-studies.ts` and drop screenshots in `public/images/case-studies/<slug>/`. The route, sitemap entry and OG image are generated automatically. `results` and `testimonial` render only when present, so add them only when you have real, client-approved data.
+Edit files in `content/` to change copy. `content/case-studies.ts` is the single source for the homepage entries, `/work` and `/work/[slug]`. Each study has:
+
+- **Imagery:** `showcase` (homepage slides), `cover` (homepage and `/work`), `hero` (case-study opener, with a mobile crop), `walkthrough` (screenshot + explanation) and `gallery`.
+- **Story:** `overview`, `challenge`, `solution`, `built` (grouped capabilities), `technology` (layer / technology / role), `architecture` (a layered diagram, with `built: true` marking what we engineered) and `flow` (a step-by-step sequence).
+- **Metadata:** `seo`, `outcome`, `results` and `testimonial`.
+
+To add a case study, append an entry and drop screenshots in `public/images/case-studies/<slug>/`. The route, sitemap entry and OG image are generated automatically, and previous/next links fall back to /work at the ends. `results` and `testimonial` render only when present, so add them only when you have real, client-approved data. Architecture and technology should describe the real system: check the project's repository before editing them.
 
 ## Assumptions (v1)
 

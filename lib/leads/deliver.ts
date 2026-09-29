@@ -1,85 +1,94 @@
 import "server-only";
 import type { Enquiry } from "./schema";
+import { enquiryHtml, enquirySubject, enquiryText } from "./email";
 
 /**
- * Lead delivery — the one place enquiries leave the site.
+ * Lead delivery — the one place enquiries leave the site. Server-only: keys
+ * and recipients never reach the browser.
  *
  * Configure one or both channels with environment variables:
- *   LEAD_WEBHOOK_URL            → JSON POST (Zapier, Make, Slack workflow, CRM, n8n…)
  *   RESEND_API_KEY + LEAD_NOTIFY_EMAIL (+ LEAD_FROM_EMAIL) → email via Resend's HTTP API
+ *   LEAD_WEBHOOK_URL                                        → JSON POST (Zapier, Make, CRM, n8n…)
  *
- * If nothing is configured we report failure honestly rather than pretend the
- * enquiry was received.
+ * The enquiry counts as delivered when at least one configured channel
+ * accepts it. If nothing is configured, or every channel fails, we report
+ * failure honestly rather than pretend the enquiry was received.
  */
 
 export type DeliveryResult = { ok: true } | { ok: false; reason: "not_configured" | "delivery_failed" };
+
+type Channel = { name: "resend" | "webhook"; send: () => Promise<Response> };
+
+const TIMEOUT_MS = 10_000;
+
+function resendChannel(enquiry: Enquiry): Channel | undefined {
+  const apiKey = process.env.RESEND_API_KEY;
+  const to = process.env.LEAD_NOTIFY_EMAIL?.split(",").map((s) => s.trim()).filter(Boolean);
+  if (!apiKey || !to?.length) return undefined;
+
+  return {
+    name: "resend",
+    send: () =>
+      fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          // Always our verified sender; the visitor is only ever the Reply-To.
+          // onboarding@resend.dev works only for the Resend account's own inbox — set LEAD_FROM_EMAIL in production.
+          from: process.env.LEAD_FROM_EMAIL || "Project Enquiries <onboarding@resend.dev>",
+          to,
+          reply_to: enquiry.email,
+          subject: enquirySubject(enquiry).replace(/[\r\n]+/g, " "),
+          text: enquiryText(enquiry),
+          html: enquiryHtml(enquiry),
+        }),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      }),
+  };
+}
+
+function webhookChannel(enquiry: Enquiry): Channel | undefined {
+  const url = process.env.LEAD_WEBHOOK_URL;
+  if (!url) return undefined;
+  return {
+    name: "webhook",
+    send: () =>
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "project_enquiry", submittedAt: new Date().toISOString(), enquiry }),
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      }),
+  };
+}
 
 export function isLeadDeliveryConfigured() {
   return Boolean(process.env.LEAD_WEBHOOK_URL || (process.env.RESEND_API_KEY && process.env.LEAD_NOTIFY_EMAIL));
 }
 
 export async function deliverEnquiry(enquiry: Enquiry): Promise<DeliveryResult> {
-  const channels: Promise<Response>[] = [];
-  const payload = { type: "project_enquiry", submittedAt: new Date().toISOString(), enquiry };
-
-  if (process.env.LEAD_WEBHOOK_URL) {
-    channels.push(
-      fetch(process.env.LEAD_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(10_000),
-      }),
-    );
-  }
-
-  if (process.env.RESEND_API_KEY && process.env.LEAD_NOTIFY_EMAIL) {
-    channels.push(
-      fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: process.env.LEAD_FROM_EMAIL || "Studio Enquiries <onboarding@resend.dev>",
-          to: process.env.LEAD_NOTIFY_EMAIL.split(",").map((s) => s.trim()),
-          reply_to: enquiry.email,
-          subject: `New project enquiry — ${enquiry.company}`,
-          text: formatEnquiry(enquiry),
-        }),
-        signal: AbortSignal.timeout(10_000),
-      }),
-    );
-  }
+  const channels = [resendChannel(enquiry), webhookChannel(enquiry)].filter((c): c is Channel => Boolean(c));
 
   if (channels.length === 0) {
-    console.warn("[leads] Enquiry received but no delivery channel is configured. Set LEAD_WEBHOOK_URL or RESEND_API_KEY + LEAD_NOTIFY_EMAIL.");
+    console.warn("[leads] Enquiry received but no delivery channel is configured. Set RESEND_API_KEY + LEAD_NOTIFY_EMAIL or LEAD_WEBHOOK_URL.");
     return { ok: false, reason: "not_configured" };
   }
 
-  const results = await Promise.allSettled(channels);
-  // Success if at least one channel accepted it — the enquiry is not lost.
-  const delivered = results.some((r) => r.status === "fulfilled" && r.value.ok);
-  if (!delivered) {
-    console.error("[leads] All delivery channels failed", results.map((r) => (r.status === "fulfilled" ? r.value.status : String(r.reason))));
-    return { ok: false, reason: "delivery_failed" };
-  }
-  return { ok: true };
-}
+  const results = await Promise.all(
+    channels.map(async (channel) => {
+      try {
+        const res = await channel.send();
+        if (res.ok) return true;
+        // Log the provider's reason (e.g. unverified sender), never the enquiry itself.
+        const detail = await res.text().catch(() => "");
+        console.error(`[leads] ${channel.name} rejected the enquiry: HTTP ${res.status} ${detail.slice(0, 300)}`);
+        return false;
+      } catch (error) {
+        console.error(`[leads] ${channel.name} failed: ${error instanceof Error ? error.message : String(error)}`);
+        return false;
+      }
+    }),
+  );
 
-function formatEnquiry(e: Enquiry) {
-  return [
-    `Name: ${e.name}`,
-    `Brand / company: ${e.company}`,
-    `Email: ${e.email}`,
-    `Phone / WhatsApp: ${e.phone}`,
-    `Website: ${e.website ?? "—"}`,
-    `Category: ${e.category}`,
-    `Needs: ${e.needs.join(", ")}`,
-    `Budget: ${e.budget}`,
-    `Desired launch: ${e.launchDate ?? "—"}`,
-    "",
-    e.details ?? "",
-  ].join("\n");
+  return results.some(Boolean) ? { ok: true } : { ok: false, reason: "delivery_failed" };
 }
