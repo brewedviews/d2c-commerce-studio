@@ -36,7 +36,7 @@ export function BrowserFrame({
           <i className="size-1.5 rounded-full bg-current opacity-40" />
           <i className="size-1.5 rounded-full bg-current opacity-40" />
         </span>
-        {url && <span className="label mx-auto -translate-x-4 text-[0.62rem] normal-case tracking-normal opacity-80">{url}</span>}
+        {url && <span className="label mx-auto -translate-x-4 text-[0.62rem] normal-case tracking-normal">{url}</span>}
       </div>
       <Image
         src={image.src}

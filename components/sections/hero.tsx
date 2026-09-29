@@ -42,7 +42,7 @@ export function Hero() {
         <div className="mt-10 grid gap-8 md:mt-14 md:grid-cols-12 md:items-end">
           <nav
             aria-label="Selected work"
-            className="fade-in hidden self-end md:col-span-4 md:row-span-2 md:row-start-1 md:block"
+            className="fade-in hidden self-end lg:col-span-4 lg:row-span-2 lg:row-start-1 lg:block"
             style={{ "--i": 5 } as React.CSSProperties}
           >
             <p className="label text-stone">Selected work</p>

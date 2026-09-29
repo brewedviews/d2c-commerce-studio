@@ -40,13 +40,13 @@ export function FlagshipCase() {
         </div>
       </div>
 
-      <div className="container-site mt-24 grid gap-14 md:mt-32 md:grid-cols-12">
-        <div data-reveal className="md:col-span-4">
+      <div className="container-site mt-24 grid gap-14 md:mt-32 md:grid-cols-2 lg:grid-cols-12">
+        <div data-reveal className="md:col-span-2 lg:col-span-4">
           <h3 className="label text-stone-soft">Challenge</h3>
           <p className="mt-5 font-display text-d4">{study.challenge}</p>
         </div>
 
-        <div data-reveal className="md:col-span-4 md:col-start-6">
+        <div data-reveal className="lg:col-span-4 lg:col-start-6">
           <h3 className="label text-stone-soft">What we built</h3>
           <ol className="mt-5 border-t border-line-dark">
             {study.capabilities.map((c, i) => (
@@ -58,7 +58,7 @@ export function FlagshipCase() {
           </ol>
         </div>
 
-        <div data-reveal className="flex flex-col md:col-span-3 md:col-start-10">
+        <div data-reveal className="flex flex-col lg:col-span-3 lg:col-start-10">
           <h3 className="label text-stone-soft">Outcome</h3>
           <p className="mt-5 text-lead text-paper/90">{study.outcome}</p>
           <p className="label mt-6 text-stone-soft">{study.stack.join(" · ")}</p>
