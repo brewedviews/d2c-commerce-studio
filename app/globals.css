@@ -1,26 +1,214 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ──────────────────────────────────────────────────────────────
+   Design tokens
+   Paper + ink editorial palette with a single sindoor accent.
+   ────────────────────────────────────────────────────────────── */
+@theme {
+  --color-paper: #f3f0e8;
+  --color-paper-sunk: #e9e5da;
+  --color-ink: #131311;
+  --color-ink-raised: #1d1d1a;
+  --color-stone: #625e55;
+  --color-stone-soft: #a8a398;
+  --color-line: #d6d0c2;
+  --color-line-dark: #34332e;
+  --color-accent: #b3361c;
+  --color-accent-ink: #fbf3ee;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-display: var(--font-instrument-serif), "Times New Roman", serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Editorial type scale — fluid from 360px to 1680px */
+  --text-d1: clamp(3.1rem, 1.6rem + 7.4vw, 10.5rem);
+  --text-d1--line-height: 0.9;
+  --text-d1--letter-spacing: -0.025em;
+  --text-d2: clamp(2.5rem, 1.5rem + 4.6vw, 6.5rem);
+  --text-d2--line-height: 0.95;
+  --text-d2--letter-spacing: -0.02em;
+  --text-d3: clamp(1.9rem, 1.4rem + 2.2vw, 3.6rem);
+  --text-d3--line-height: 1;
+  --text-d3--letter-spacing: -0.015em;
+  --text-d4: clamp(1.5rem, 1.25rem + 1vw, 2.2rem);
+  --text-d4--line-height: 1.1;
+  --text-lead: clamp(1.1rem, 1rem + 0.45vw, 1.4rem);
+  --text-lead--line-height: 1.45;
+  --text-label: 0.72rem;
+  --text-label--line-height: 1.2;
+  --text-label--letter-spacing: 0.08em;
+
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --breakpoint-3xl: 112rem;
+
+  --animate-marquee: marquee 48s linear infinite;
+  --animate-rise: rise 1.1s var(--ease-out-expo) both;
+  --animate-fade: fade 1.2s var(--ease-out-expo) both;
+
+  @keyframes marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
+  }
+  @keyframes rise {
+    from { transform: translate3d(0, 105%, 0); }
+    to { transform: translate3d(0, 0, 0); }
+  }
+  @keyframes fade {
+    from { opacity: 0; transform: translate3d(0, 1.25rem, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Site container: generous gutters, capped measure on very large screens */
+@utility container-site {
+  width: 100%;
+  max-width: 1680px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 0.6rem + 3.2vw, 4rem);
+}
+
+@utility section-y {
+  padding-block: clamp(5rem, 3rem + 8vw, 11rem);
+}
+
+/* Mono micro-label used for indices, metadata and eyebrows */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+}
+
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.5s var(--ease-out-expo);
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    background: var(--color-paper);
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  h1, h2, h3, h4 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Motion
+   Scroll reveals use CSS scroll-driven animations: zero JavaScript,
+   and browsers without support simply show content immediately.
+   ────────────────────────────────────────────────────────────── */
+/* Headline lines are always blocks; only the animation is motion-gated. */
+.rise-line {
+  display: block;
+  overflow: clip;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.rise-line > span {
+  display: block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-reveal] {
+      animation: fade linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    [data-reveal="image"] {
+      animation-name: reveal-image;
+    }
+  }
+
+  @keyframes reveal-image {
+    from { clip-path: inset(12% 6% 0 6%); opacity: 0.4; }
+    to { clip-path: inset(0 0 0 0); opacity: 1; }
+  }
+
+  /* Line-by-line headline rise on first paint */
+  .rise-line > span {
+    animation: var(--animate-rise);
+    animation-delay: calc(var(--i, 0) * 90ms + 80ms);
+  }
+  .fade-in {
+    animation: var(--animate-fade);
+    animation-delay: calc(var(--i, 0) * 90ms + 350ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Native <details> accordion with smooth height where supported */
+details.faq::details-content {
+  block-size: 0;
+  overflow-y: clip;
+  transition:
+    block-size 0.5s var(--ease-out-expo),
+    content-visibility 0.5s allow-discrete;
+}
+details.faq[open]::details-content {
+  block-size: auto;
+}
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+}
+details.faq > summary {
+  list-style: none;
+}
+details.faq > summary::-webkit-details-marker {
+  display: none;
 }
