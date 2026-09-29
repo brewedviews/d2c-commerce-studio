@@ -17,8 +17,8 @@ export const site = {
   location: "India",
   tagline: "We design and build premium digital commerce experiences for D2C brands.",
   description:
-    "A D2C commerce studio designing and building premium Shopify and custom storefronts — with Razorpay, Shiprocket and modern commerce infrastructure. Projects from ₹99K.",
-  startingPrice: "₹99K",
+    "A D2C commerce studio designing and building premium Shopify and custom storefronts — with Razorpay, Shiprocket and modern commerce infrastructure. Projects from ₹30K.",
+  startingPrice: "₹30K",
   /** Contact channels are optional; links render only when configured. */
   contact: {
     email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || undefined,

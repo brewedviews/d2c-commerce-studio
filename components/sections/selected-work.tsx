@@ -1,5 +1,5 @@
 import { caseStudies } from "@/content/case-studies";
-import { ProjectFeature } from "@/components/case-study/project-feature";
+import { CaseEntry } from "@/components/case-study/case-entry";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionLabel } from "@/components/ui/section-label";
 
@@ -22,13 +22,13 @@ export function SelectedWork() {
           </div>
         </div>
 
-        <div className="mt-16 space-y-28 md:mt-24 md:space-y-40">
+        <div className="mt-14 space-y-8 md:mt-20 md:space-y-12">
           {caseStudies.map((study, i) => (
-            <ProjectFeature key={study.slug} study={study} index={i + 1} reverse={i % 2 === 1} />
+            <CaseEntry key={study.slug} study={study} index={i + 1} />
           ))}
         </div>
 
-        <div className="mt-20 flex justify-center md:mt-28">
+        <div className="mt-14 flex justify-center md:mt-20">
           <ButtonLink href="/work" variant="text">
             All work
           </ButtonLink>

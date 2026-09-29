@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { services } from "@/content/services";
 import { site } from "@/content/site";
+import { pricingNotes } from "@/content/pricing";
 import { Ownership } from "@/components/pricing/ownership";
 import { PricingList } from "@/components/pricing/pricing-list";
 import { Process } from "@/components/sections/process";
@@ -70,8 +71,10 @@ export default function ServicesPage() {
             <div className="lg:col-span-4">
               <SectionLabel>Pricing</SectionLabel>
               <h2 id="svc-pricing-title" className="mt-6 font-display text-d2">
-                Starting <em className="italic">prices.</em>
+                Projects from <em className="italic">{site.startingPrice}.</em>
               </h2>
+              <p className="mt-6 max-w-sm text-ink/75">{pricingNotes.scoping}</p>
+              <p className="mt-4 max-w-sm text-ink/75">{pricingNotes.indicative}</p>
             </div>
             <div className="lg:col-span-8">
               <PricingList />

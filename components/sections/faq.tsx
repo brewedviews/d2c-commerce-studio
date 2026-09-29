@@ -19,7 +19,7 @@ export function Faq() {
       <div className="container-site grid gap-14 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-32">
-            <SectionLabel index="08">FAQ</SectionLabel>
+            <SectionLabel index="06">FAQ</SectionLabel>
             <h2 id="faq-title" data-reveal className="mt-6 font-display text-d2">
               Questions, <em className="italic">answered.</em>
             </h2>

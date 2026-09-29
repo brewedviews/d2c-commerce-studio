@@ -4,7 +4,7 @@ export const faqs: FaqItem[] = [
   {
     question: "How much does a D2C website cost?",
     answer:
-      "Projects start from ₹99K for a brand-led Shopify store. Custom builds start from ₹1.99L, sophisticated commerce architecture from ₹2.99L, and complex systems from ₹4L+. You get a fixed quote after a short discovery call.",
+      "Projects start from around ₹30K for a simple D2C launch. Custom storefronts typically run ₹50K–₹1.5L+, advanced commerce builds ₹1L–₹3L+, and complex systems are scoped to requirements. These ranges are indicative — you get a fixed quote after a short discovery call. Third-party subscriptions and platform costs are separate.",
   },
   {
     question: "How long does a website take?",

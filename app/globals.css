@@ -212,3 +212,9 @@ details.faq > summary {
 details.faq > summary::-webkit-details-marker {
   display: none;
 }
+
+/* Showcase slide timer: a hairline that fills over the slide's duration. */
+@keyframes progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}

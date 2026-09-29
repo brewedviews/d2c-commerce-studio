@@ -39,7 +39,10 @@ export type ProcessStep = {
 
 export type PricingTier = {
   name: string;
-  from: string;
+  /** How to read the range: "Starting around", "Typically", "Scoped". */
+  qualifier: string;
+  /** Indicative, never a fixed price. */
+  range: string;
   audience: string;
   includes: string[];
 };
@@ -60,6 +63,19 @@ export type Testimonial = {
   role?: string;
 };
 
+/** A matched desktop + mobile capture of the same page, for the homepage showcase. */
+export type Showcase = {
+  desktop: ImageAsset;
+  mobile: ImageAsset;
+};
+
+/** The single strongest crop of a site, used on its homepage case-study entry. */
+export type Cover = {
+  image: ImageAsset;
+  /** Art-directed crop for small screens; falls back to `image`. */
+  mobile?: ImageAsset;
+};
+
 export type CaseStudy = {
   slug: string;
   title: string;
@@ -75,6 +91,8 @@ export type CaseStudy = {
   heroImage: ImageAsset;
   /** Tall mobile capture shown alongside the hero on listings */
   mobileImage?: ImageAsset;
+  showcase: Showcase;
+  cover: Cover;
   gallery: ImageAsset[];
   challenge: string;
   solution: string;

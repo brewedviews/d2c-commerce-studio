@@ -2,7 +2,6 @@ import Link from "next/link";
 import { site } from "@/content/site";
 import { caseStudies } from "@/content/case-studies";
 import { ButtonLink } from "@/components/ui/button-link";
-import { BrowserFrame, PhoneFrame } from "@/components/ui/device-frame";
 
 const headline = [
   <>Premium digital</>,
@@ -13,8 +12,6 @@ const headline = [
 ];
 
 export function Hero() {
-  const [prabha, lokl] = caseStudies;
-
   return (
     <section aria-labelledby="hero-title" className="relative">
       <div className="container-site pb-14 pt-10 md:pb-20 md:pt-16">
@@ -77,34 +74,6 @@ export function Hero() {
             <ButtonLink href={site.cta.secondary.href} variant="text">
               {site.cta.secondary.label}
             </ButtonLink>
-          </div>
-        </div>
-      </div>
-
-      {/* Stage: real work, not illustration */}
-      <div className="relative bg-paper-sunk">
-        <div className="container-site relative pb-16 pt-12 md:pb-24 md:pt-16">
-          <div className="fade-in relative" style={{ "--i": 5 } as React.CSSProperties}>
-            <div className="w-[88%] md:w-[80%]">
-              <BrowserFrame
-                image={prabha.heroImage}
-                url={prabha.urlLabel}
-                sizes="(min-width: 1680px) 1300px, (min-width: 768px) 80vw, 88vw"
-                priority
-              />
-            </div>
-            <div className="absolute -bottom-8 right-0 w-[30%] max-w-[300px] md:-bottom-12 md:right-[3%] md:w-[19%]">
-              {lokl.mobileImage && <PhoneFrame image={lokl.mobileImage} sizes="(min-width: 768px) 19vw, 30vw" priority />}
-            </div>
-          </div>
-
-          <div className="mt-16 grid gap-3 text-sm text-stone sm:grid-cols-2 md:mt-20 md:w-[80%]">
-            <p className="label">
-              <span className="text-ink">{prabha.title}</span> — {prabha.category}, live at {prabha.urlLabel}
-            </p>
-            <p className="label sm:text-right md:text-left">
-              <span className="text-ink">{lokl.title}</span> — {lokl.category}, live at {lokl.urlLabel}
-            </p>
           </div>
         </div>
       </div>

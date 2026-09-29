@@ -1,44 +1,49 @@
-import { pricingNotes } from "@/content/pricing";
+import { pricingSummary } from "@/content/pricing";
 import { site } from "@/content/site";
-import { PricingList } from "@/components/pricing/pricing-list";
-import { Ownership } from "@/components/pricing/ownership";
 import { ButtonLink } from "@/components/ui/button-link";
 import { SectionLabel } from "@/components/ui/section-label";
 
+/**
+ * A starting point to self-qualify against rather than a package table:
+ * the price is a floor, and scope sets the rest.
+ */
 export function Pricing() {
   return (
     <section
       id="pricing"
       aria-labelledby="pricing-title"
       data-track-view="view_pricing"
-      className="section-y bg-paper-sunk"
+      className="border-t border-line py-[clamp(4rem,2.5rem+5vw,7.5rem)]"
     >
-      <div className="container-site">
-        <div className="grid gap-14 lg:grid-cols-12">
-          <div className="lg:col-span-4">
-            <SectionLabel index="05">Pricing</SectionLabel>
-            <h2 id="pricing-title" data-reveal className="mt-6 font-display text-d2">
-              Clear from the <em className="italic">start.</em>
-            </h2>
-            <p data-reveal className="mt-6 max-w-sm text-ink/75">
-              {pricingNotes.scoping}
-            </p>
-            <ButtonLink
-              href={site.cta.primary.href}
-              track="start_project"
-              trackLocation="pricing"
-              className="mt-8"
-            >
-              Get a fixed quote
-            </ButtonLink>
-          </div>
-          <div className="lg:col-span-8">
-            <PricingList />
-          </div>
+      <div className="container-site grid gap-10 md:grid-cols-12 md:gap-8">
+        <div className="md:col-span-4 lg:col-span-3">
+          <SectionLabel index="05">Pricing</SectionLabel>
         </div>
 
-        <div data-reveal className="mt-16 md:mt-24">
-          <Ownership />
+        <div className="md:col-span-8 lg:col-span-5">
+          <h2 id="pricing-title" data-reveal>
+            <span className="label block text-stone">Projects starting from</span>
+            <span className="mt-4 block font-display text-d1">{site.startingPrice}+</span>
+          </h2>
+          <p data-reveal className="mt-8 max-w-xl text-lead text-ink/85">
+            {pricingSummary.lead}
+          </p>
+        </div>
+
+        <div data-reveal className="md:col-span-8 md:col-start-5 lg:col-span-4 lg:col-start-9 lg:self-end">
+          <p className="label text-stone">Scoped on</p>
+          <ul className="mt-3 border-t border-line">
+            {pricingSummary.factors.map((f) => (
+              <li key={f} className="border-b border-line py-2.5 text-ink/85">
+                {f}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-6 text-sm text-ink/70">{pricingSummary.scoping}</p>
+          <p className="mt-2 text-sm text-ink/70">{pricingSummary.thirdParty}</p>
+          <ButtonLink href={site.cta.primary.href} variant="text" track="start_project" trackLocation="pricing" className="mt-6">
+            Get a quote for your scope
+          </ButtonLink>
         </div>
       </div>
     </section>

@@ -8,6 +8,7 @@ import type { CaseStudy, ImageAsset } from "./types";
 
 const desktop = (src: string, alt: string): ImageAsset => ({ src, alt, width: 2400, height: 1500, kind: "desktop" });
 const mobile = (src: string, alt: string): ImageAsset => ({ src, alt, width: 1109, height: 2400, kind: "mobile" });
+const crop = (src: string, alt: string, width: number, height: number): ImageAsset => ({ src, alt, width, height });
 
 const pk = "/images/case-studies/prabha-kala";
 const lk = "/images/case-studies/lokl";
@@ -27,6 +28,25 @@ export const caseStudies: CaseStudy[] = [
       "Prabha Kala storefront homepage with an editorial hero of two women in handloom sarees and the line “Made for the woman on the move.”",
     ),
     mobileImage: mobile(`${pk}/mobile-home.jpg`, "Prabha Kala homepage on a phone"),
+    showcase: {
+      desktop: desktop(
+        `${pk}/showcase-desktop.jpg`,
+        "Prabha Kala homepage on desktop: a campaign hero of a woman in a pink saree with tasselled pallu and the line “Draped in colour. Made for moments.”",
+      ),
+      mobile: mobile(
+        `${pk}/showcase-mobile.jpg`,
+        "The same Prabha Kala homepage on a phone, with the hero recomposed for a tall screen",
+      ),
+    },
+    cover: {
+      image: crop(
+        `${pk}/cover.jpg`,
+        "Prabha Kala’s Shop by Occasion section: Festive Edit, Everyday Elegance, Wedding Edit and New & Noteworthy tiles",
+        2400,
+        1095,
+      ),
+      mobile: crop(`${pk}/cover-mobile.jpg`, "Prabha Kala’s Shop by Occasion tiles on a phone", 1154, 1850),
+    },
     gallery: [
       desktop(`${pk}/new-arrivals.jpg`, "New Arrivals grid on the Prabha Kala storefront with fabric labels, prices and add-to-bag actions"),
       mobile(`${pk}/mobile-product.jpg`, "Prabha Kala product page on mobile showing a purple Banarasi silk saree with a sticky add-to-bag bar"),
@@ -75,6 +95,25 @@ export const caseStudies: CaseStudy[] = [
       "LOKL homepage with the banner “Bhilai’s own neighbourhood shopping app” and a festive campaign hero",
     ),
     mobileImage: mobile(`${lk}/mobile-home.jpg`, "LOKL shopping app homepage on a phone"),
+    showcase: {
+      desktop: desktop(
+        `${lk}/showcase-desktop.jpg`,
+        "LOKL women’s store on desktop: 45-minute delivery banner, a “Plans tonight?” campaign and a New in Women product row",
+      ),
+      mobile: mobile(
+        `${lk}/showcase-mobile.jpg`,
+        "The same LOKL women’s page on a phone, with app-style bottom navigation and store names on every product",
+      ),
+    },
+    cover: {
+      image: crop(
+        `${lk}/cover.jpg`,
+        "LOKL’s Picks for Every Budget section: lifestyle photography merchandised by price, under ₹499 and under ₹999",
+        2400,
+        1244,
+      ),
+      mobile: crop(`${lk}/cover-mobile.jpg`, "LOKL’s Picks for Every Budget on a phone", 1154, 820),
+    },
     gallery: [
       desktop(`${lk}/catalogue.jpg`, "LOKL product catalogue with gender and price filters and discount chips"),
       mobile(`${lk}/mobile-product.jpg`, "LOKL product page on mobile with size selection, Buy now and Add to bag"),
@@ -117,4 +156,3 @@ export function getCaseStudy(slug: string) {
   return caseStudies.find((c) => c.slug === slug);
 }
 
-export const flagshipCaseStudy = caseStudies[0];
